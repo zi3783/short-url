@@ -1,0 +1,29 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  profiles:
+    active: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${zi3783.datasource.url}
+    username: ${zi3783.datasource.username}
+    password: ${zi3783.datasource.password}
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      logic-delete-field: is_deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      id-type: none
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
