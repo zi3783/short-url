@@ -12,8 +12,8 @@ public class Result <T> {
     }
 
     //失败
-    public static <T> Result<T> error(String msg) {
-        return new Result<>(500, null, msg);
+    public static <T> Result<T> error(int code,String msg) {
+        return new Result<>(code, null, msg);
     }
     //成功
     public static <T> Result<T> success() {
