@@ -5,6 +5,7 @@ import io.github.zi3783.entity.ShortUrlMap;
 import io.github.zi3783.exception.BusinessException;
 import io.github.zi3783.mapper.ShortUrlMapper;
 import io.github.zi3783.service.ShortUrlService;
+import io.github.zi3783.util.FreshMysql;
 import io.github.zi3783.util.ShortUrlGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.LongAdder;
 
 @Slf4j
 @Service
@@ -30,6 +33,9 @@ public class ShortUrlServiceImpl implements ShortUrlService {
 
     @Autowired
     private RedisTemplate<String,Object> redisTemplate;
+
+    @Autowired
+    private FreshMysql freshMySQL;
 
     /**
      * 创建短链
@@ -71,6 +77,11 @@ public class ShortUrlServiceImpl implements ShortUrlService {
         return encode;
     }
 
+    /**
+     * 解析短链
+     * @param shortUrl
+     * @return
+     */
     @Override
     public String getTargetUrl(String shortUrl) {
         if(shortUrl==null || shortUrl.isEmpty()){
@@ -79,25 +90,47 @@ public class ShortUrlServiceImpl implements ShortUrlService {
         //解析短链获得id
         long id = shortUrlGenerator.decode(shortUrl);
 
-        //查找数据库
-        ShortUrlMap targetUrl = shortUrlMapper.selectById(id);
-        if(targetUrl==null){
-            throw new BusinessException("没找到目标地址");
-        }
-        if(targetUrl.getIsDeleted()==1){
-            throw new BusinessException("目标地址已删除");
-        }
-        if(targetUrl.getExpireTime() != null &&
-                targetUrl.getExpireTime().getTime() <= System.currentTimeMillis()) {
-            throw new BusinessException("目标地址已过期");
-        }
-        //更新数据
-        Long visitedCount = targetUrl.getVisitedCount();
-        targetUrl.setVisitedCount(visitedCount+1);
-        shortUrlMapper.updateById(targetUrl);
+        //查找redis缓存找数据
+        String key = "id:" + id;
+        String target = (String) redisTemplate.opsForValue().get(key);
 
-        log.info("访问成功");
-        //返回数据
-        return targetUrl.getTargetUrl();
+        //找到了返回
+        if(target != null){
+            return target;
+        }
+        //没找到查找mysql
+        try{
+            //防止缓存击穿
+            //redis分布式锁
+            //获得锁
+
+
+            //查找数据库
+            ShortUrlMap targetUrl = shortUrlMapper.selectById(id);
+            if(targetUrl==null){
+                throw new BusinessException("没找到目标地址");
+            }
+            if(targetUrl.getIsDeleted()==1){
+                throw new BusinessException("目标地址已删除");
+            }
+            if(targetUrl.getExpireTime() != null &&
+                    targetUrl.getExpireTime().getTime() <= System.currentTimeMillis()) {
+                throw new BusinessException("目标地址已过期");
+            }
+            //更新数据
+            Long visitedCount = targetUrl.getVisitedCount();
+            targetUrl.setVisitedCount(visitedCount+1);
+            shortUrlMapper.updateById(targetUrl);
+
+            log.info("访问成功");
+        }finally {
+            //释放锁
+
+        }
+
+
+//        //返回数据
+//        return targetUrl.getTargetUrl();
+        return null;
     }
 }
