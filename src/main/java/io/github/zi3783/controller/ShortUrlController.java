@@ -21,6 +21,7 @@ public class ShortUrlController {
     @Autowired
     private ShortUrlService shortUrlService;
 
+
     @PostMapping("/create")
     @Operation(summary = "创建短链")
     public Result<String> createShortUrl(@RequestParam String targetUrl) {

@@ -11,6 +11,13 @@ spring:
     url: ${zi3783.datasource.url}
     username: ${zi3783.datasource.username}
     password: ${zi3783.datasource.password}
+    hikari:
+      maximum-pool-size: 100        # 最大连接数（从 10 增加到 100）
+      minimum-idle: 20              # 最小空闲连接
+      connection-timeout: 30000     # 连接超时 30 秒
+      idle-timeout: 600000          # 空闲超时 10 分钟
+      max-lifetime: 1800000         # 连接最大寿命 30 分钟
+      leak-detection-threshold: 60000  # 泄漏检测（超过 60 秒未释放告警）
   data:
     redis:
       host: localhost
@@ -20,9 +27,9 @@ spring:
       timeout: 5000ms
       lettuce:
         pool:
-          max-active: 8
-          max-idle: 10
-          min-idle: 5
+          max-active: 200
+          max-idle: 100
+          min-idle: 20
 
 mybatis-plus:
   configuration:

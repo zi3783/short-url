@@ -21,6 +21,7 @@
         <lombok.version>1.18.36</lombok.version>
         <mybatis-plus.version>3.5.15</mybatis-plus.version>
         <knife4j.version>4.5.0</knife4j.version>
+        <redisson.version>4.5.0</redisson.version>
     </properties>
 
     <dependencies>
@@ -86,6 +87,13 @@
             <artifactId>commons-pool2</artifactId>
         </dependency>
 
+        <!-- redisson -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+            <version>${redisson.version}</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
