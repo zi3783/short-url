@@ -1,5 +1,8 @@
 package io.github.zi3783.common;
 
+import lombok.Data;
+
+@Data
 public class Result <T> {
     private int code;
     private T data;

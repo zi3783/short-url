@@ -2,10 +2,12 @@ package io.github.zi3783.exception;
 
 
 import io.github.zi3783.common.Result;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Hidden
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {

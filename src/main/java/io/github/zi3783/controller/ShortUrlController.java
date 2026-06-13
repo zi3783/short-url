@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 @RestController
 @RequestMapping("/shortUrl")
 @Slf4j
@@ -31,10 +33,16 @@ public class ShortUrlController {
     @Operation(summary = "访问短链")
     @GetMapping("/{shortUrl}")
     public ResponseEntity<Void> redirect(@PathVariable String shortUrl) {
-        //TODO 为实现解析短链接
+
+        String targetUrl = shortUrlService.getTargetUrl(shortUrl);
+
+        if(targetUrl == null){
+            return ResponseEntity.notFound().build();
+        }
+
         return ResponseEntity
                 .status(HttpStatus.FOUND)
-//                .location()
+                .location(URI.create(targetUrl))
                 .build();
     }
 }

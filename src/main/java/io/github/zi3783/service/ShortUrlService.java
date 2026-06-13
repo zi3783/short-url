@@ -8,4 +8,11 @@ public interface ShortUrlService {
      * @return
      */
     String createShortUrl(String targetUrl);
+
+    /**
+     * 解析短链
+     * @param shortUrl
+     * @return
+     */
+    String getTargetUrl(String shortUrl);
 }
