@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.github.zi3783.mapper.ShortUrlMapper">
+
+    <update id="UpdateBatchVisitedCountFromId">
+        <foreach collection="ids" item="id" index="i" separator=";" >
+            update short_url_map
+            set visited_count = visited_count + #{list[${i}]}
+            where id = #{id}
+        </foreach>
+    </update>
+</mapper>
